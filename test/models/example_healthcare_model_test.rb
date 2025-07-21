@@ -37,25 +37,63 @@ class ExampleHealthcareModelTest < ActiveSupport::TestCase
     assert_business_hours_time(appointment_time)
   end
 
-  test "sample attribute generators work" do
-    # Test all sample attribute generators
+  test "hospital attributes generator works with STI" do
+    # Test hospital attribute generation
     hospital_attrs = sample_hospital_attributes
     assert_not_nil hospital_attrs[:name]
     assert_not_nil hospital_attrs[:email]
     assert_valid_email(hospital_attrs[:email])
 
+    # Test STI and hospital-specific fields
+    assert_valid_hospital_attributes(hospital_attrs)
+    assert_equal "Hospital", hospital_attrs[:type]
+    assert_not_nil hospital_attrs[:health_care_type]
+    assert_not_nil hospital_attrs[:bed_capacity]
+    assert_not_nil hospital_attrs[:emergency_services]
+  end
+
+  test "clinic attributes generator works with STI" do
+    # Test clinic attribute generation
     clinic_attrs = sample_clinic_attributes
     assert_not_nil clinic_attrs[:name]
     assert_not_nil clinic_attrs[:email]
+    assert_valid_email(clinic_attrs[:email])
 
+    # Test STI and clinic-specific fields
+    assert_valid_clinic_attributes(clinic_attrs)
+    assert_equal "Clinic", clinic_attrs[:type]
+    assert_not_nil clinic_attrs[:health_care_type]
+    assert_not_nil clinic_attrs[:services_offered]
+    assert_not_nil clinic_attrs[:accepts_walk_ins]
+  end
+
+  test "healthcare facility type validation works" do
+    # Test hospital healthcare type validation
+    hospital_attrs = sample_hospital_attributes
+    assert_valid_healthcare_facility_type("Hospital", hospital_attrs[:health_care_type])
+
+    # Test clinic healthcare type validation
+    clinic_attrs = sample_clinic_attributes
+    assert_valid_healthcare_facility_type("Clinic", clinic_attrs[:health_care_type])
+
+    # Test invalid healthcare type raises error
+    assert_raises(Minitest::Assertion) do
+      assert_valid_healthcare_facility_type("Hospital", "Invalid Type")
+    end
+  end
+
+  test "sample attribute generators work" do
+    # Test doctor attribute generation
     doctor_attrs = sample_doctor_attributes
     assert_not_nil doctor_attrs[:first_name]
     assert_not_nil doctor_attrs[:specialization]
 
+    # Test patient attribute generation
     patient_attrs = sample_patient_attributes
     assert_not_nil patient_attrs[:first_name]
     assert_not_nil patient_attrs[:date_of_birth]
 
+    # Test appointment attribute generation
     appointment_attrs = sample_appointment_attributes
     assert_not_nil appointment_attrs[:appointment_date]
     assert_not_nil appointment_attrs[:status]

@@ -4,6 +4,7 @@ module HealthcareTestHelper
   # Generate sample hospital data
   def sample_hospital_attributes
     {
+      type: "Hospital",
       name: "General Hospital #{rand(100..999)}",
       address: "#{rand(100..9999)} Medical Center Dr",
       city: "Healthcare City",
@@ -11,13 +12,18 @@ module HealthcareTestHelper
       zip_code: "9#{rand(1000..9999)}",
       phone: valid_phone_number,
       email: valid_email("hospital"),
-      established_date: Date.current - rand(1..50).years
+      established_date: Date.current - rand(1..50).years,
+      website_url: "https://hospital#{rand(100..999)}.com",
+      health_care_type: [ "General", "Specialty", "Teaching", "Psychiatric", "Children" ].sample,
+      bed_capacity: rand(50..500),
+      emergency_services: [ true, false ].sample
     }
   end
 
   # Generate sample clinic data
   def sample_clinic_attributes
     {
+      type: "Clinic",
       name: "#{[ 'Family', 'Pediatric', 'Internal', 'Urgent' ].sample} Clinic #{rand(100..999)}",
       address: "#{rand(100..9999)} Clinic Ave",
       city: "Healthcare City",
@@ -25,7 +31,11 @@ module HealthcareTestHelper
       zip_code: "9#{rand(1000..9999)}",
       phone: valid_phone_number,
       email: valid_email("clinic"),
-      established_date: Date.current - rand(1..30).years
+      established_date: Date.current - rand(1..30).years,
+      website_url: "https://clinic#{rand(100..999)}.com",
+      health_care_type: [ "Family Practice", "Urgent Care", "Specialty", "Pediatric", "Internal Medicine" ].sample,
+      services_offered: "Primary care, vaccinations, routine checkups, health screenings",
+      accepts_walk_ins: [ true, false ].sample
     }
   end
 
@@ -85,6 +95,38 @@ module HealthcareTestHelper
     assert hour >= 9 && hour <= 17, "Appointment time should be during business hours (9 AM - 5 PM)"
   end
 
+  # Healthcare facility validation helpers
+  def assert_valid_healthcare_facility_type(facility_type, healthcare_type)
+    case facility_type
+    when "Hospital"
+      valid_hospital_types = [ "General", "Specialty", "Teaching", "Psychiatric", "Rehabilitation", "Children", "Cancer", "Heart", "Other" ]
+      assert_includes valid_hospital_types, healthcare_type, "Invalid hospital healthcare type: #{healthcare_type}"
+    when "Clinic"
+      valid_clinic_types = [ "Family Practice", "Urgent Care", "Specialty", "Pediatric", "Internal Medicine", "Cardiology", "Dermatology", "Orthopedic", "Mental Health", "Dental", "Eye Care", "Other" ]
+      assert_includes valid_clinic_types, healthcare_type, "Invalid clinic healthcare type: #{healthcare_type}"
+    else
+      flunk "Unknown facility type: #{facility_type}"
+    end
+  end
+
+  def assert_valid_hospital_attributes(attrs)
+    assert_equal "Hospital", attrs[:type]
+    assert_not_nil attrs[:health_care_type]
+    assert_not_nil attrs[:bed_capacity]
+    assert_not_nil attrs[:emergency_services]
+    assert_valid_healthcare_facility_type("Hospital", attrs[:health_care_type])
+    assert attrs[:bed_capacity] >= 0, "Bed capacity should be non-negative"
+  end
+
+  def assert_valid_clinic_attributes(attrs)
+    assert_equal "Clinic", attrs[:type]
+    assert_not_nil attrs[:health_care_type]
+    assert_not_nil attrs[:services_offered]
+    assert_not_nil attrs[:accepts_walk_ins]
+    assert_valid_healthcare_facility_type("Clinic", attrs[:health_care_type])
+    assert attrs[:services_offered].length >= 5, "Services offered should have meaningful content"
+  end
+
   # HIPAA compliance helpers
   def assert_no_sensitive_data_in_logs(log_content)
     sensitive_patterns = [
@@ -112,11 +154,7 @@ module HealthcareTestHelper
     # This will be implemented when we have the Doctor model
   end
 
-  def cleanup_test_hospitals
-    # This will be implemented when we have the Hospital model
-  end
-
-  def cleanup_test_clinics
-    # This will be implemented when we have the Clinic model
+  def cleanup_test_healthcare_facilities
+    # This will be implemented when we have the HealthcareFacility model
   end
 end

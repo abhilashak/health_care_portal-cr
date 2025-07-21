@@ -39,7 +39,7 @@ module HealthcareTestHelper
     }
   end
 
-  # Generate sample doctor data
+  # Generate sample doctor data matching database schema
   def sample_doctor_attributes
     {
       first_name: [ "Dr. John", "Dr. Sarah", "Dr. Michael", "Dr. Emily" ].sample,
@@ -48,11 +48,13 @@ module HealthcareTestHelper
       phone: valid_phone_number,
       specialization: [ "Cardiology", "Pediatrics", "Internal Medicine", "Emergency Medicine", "Family Medicine" ].sample,
       license_number: "MD#{rand(100000..999999)}",
-      years_of_experience: rand(1..40)
+      years_of_experience: rand(1..40),
+      hospital_id: nil, # Will be set when we have actual facilities
+      clinic_id: nil    # Will be set when we have actual facilities
     }
   end
 
-  # Generate sample patient data
+  # Generate sample patient data matching database schema
   def sample_patient_attributes
     {
       first_name: [ "John", "Sarah", "Michael", "Emily", "David", "Lisa" ].sample,
@@ -60,7 +62,7 @@ module HealthcareTestHelper
       email: valid_email("patient"),
       phone: valid_phone_number,
       date_of_birth: Date.current - rand(18..80).years,
-      gender: [ "male", "female", "other" ].sample,
+      gender: [ "male", "female", "other", "prefer_not_to_say" ].sample,
       emergency_contact_name: "Emergency Contact #{rand(100..999)}",
       emergency_contact_phone: valid_phone_number
     }
@@ -125,6 +127,51 @@ module HealthcareTestHelper
     assert_not_nil attrs[:accepts_walk_ins]
     assert_valid_healthcare_facility_type("Clinic", attrs[:health_care_type])
     assert attrs[:services_offered].length >= 5, "Services offered should have meaningful content"
+  end
+
+  # Doctor validation helpers
+  def assert_valid_doctor_attributes(attrs)
+    assert_not_nil attrs[:first_name]
+    assert_not_nil attrs[:last_name]
+    assert_not_nil attrs[:email]
+    assert_not_nil attrs[:phone]
+    assert_not_nil attrs[:specialization]
+    assert_not_nil attrs[:license_number]
+    assert_not_nil attrs[:years_of_experience]
+
+    assert_valid_email(attrs[:email])
+    assert_valid_phone_number(attrs[:phone])
+    assert attrs[:years_of_experience] >= 0, "Years of experience should be non-negative"
+    assert attrs[:years_of_experience] <= 70, "Years of experience should be reasonable"
+    assert attrs[:license_number].length >= 3, "License number should have meaningful length"
+    assert attrs[:specialization].length >= 3, "Specialization should have meaningful length"
+  end
+
+  # Patient validation helpers
+  def assert_valid_patient_attributes(attrs)
+    assert_not_nil attrs[:first_name]
+    assert_not_nil attrs[:last_name]
+    assert_not_nil attrs[:email]
+    assert_not_nil attrs[:phone]
+    assert_not_nil attrs[:date_of_birth]
+    assert_not_nil attrs[:gender]
+    assert_not_nil attrs[:emergency_contact_name]
+    assert_not_nil attrs[:emergency_contact_phone]
+
+    assert_valid_email(attrs[:email])
+    assert_valid_phone_number(attrs[:phone])
+    assert_valid_phone_number(attrs[:emergency_contact_phone])
+
+    # Validate gender values
+    valid_genders = [ "male", "female", "other", "prefer_not_to_say" ]
+    assert_includes valid_genders, attrs[:gender], "Invalid gender value"
+
+    # Validate date of birth
+    assert attrs[:date_of_birth] <= Date.current, "Date of birth should not be in the future"
+    assert attrs[:date_of_birth] >= Date.new(1900, 1, 1), "Date of birth should be reasonable"
+
+    # Validate emergency contact
+    assert attrs[:emergency_contact_name].length >= 2, "Emergency contact name should have meaningful length"
   end
 
   # HIPAA compliance helpers

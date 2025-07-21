@@ -67,6 +67,45 @@ class ExampleHealthcareModelTest < ActiveSupport::TestCase
     assert_not_nil clinic_attrs[:accepts_walk_ins]
   end
 
+  test "doctor attributes generator works with database schema" do
+    # Test doctor attribute generation
+    doctor_attrs = sample_doctor_attributes
+    assert_not_nil doctor_attrs[:first_name]
+    assert_not_nil doctor_attrs[:last_name]
+    assert_not_nil doctor_attrs[:email]
+    assert_not_nil doctor_attrs[:phone]
+    assert_not_nil doctor_attrs[:specialization]
+    assert_not_nil doctor_attrs[:license_number]
+    assert_not_nil doctor_attrs[:years_of_experience]
+
+    # Test doctor-specific validation
+    assert_valid_doctor_attributes(doctor_attrs)
+
+    # Test foreign key fields are present (nullable)
+    assert doctor_attrs.key?(:hospital_id)
+    assert doctor_attrs.key?(:clinic_id)
+  end
+
+  test "patient attributes generator works with database schema" do
+    # Test patient attribute generation
+    patient_attrs = sample_patient_attributes
+    assert_not_nil patient_attrs[:first_name]
+    assert_not_nil patient_attrs[:last_name]
+    assert_not_nil patient_attrs[:email]
+    assert_not_nil patient_attrs[:phone]
+    assert_not_nil patient_attrs[:date_of_birth]
+    assert_not_nil patient_attrs[:gender]
+    assert_not_nil patient_attrs[:emergency_contact_name]
+    assert_not_nil patient_attrs[:emergency_contact_phone]
+
+    # Test patient-specific validation
+    assert_valid_patient_attributes(patient_attrs)
+
+    # Test gender validation
+    valid_genders = [ "male", "female", "other", "prefer_not_to_say" ]
+    assert_includes valid_genders, patient_attrs[:gender]
+  end
+
   test "healthcare facility type validation works" do
     # Test hospital healthcare type validation
     hospital_attrs = sample_hospital_attributes
@@ -82,17 +121,47 @@ class ExampleHealthcareModelTest < ActiveSupport::TestCase
     end
   end
 
-  test "sample attribute generators work" do
-    # Test doctor attribute generation
+  test "doctor validation helpers work" do
+    # Test valid doctor attributes
     doctor_attrs = sample_doctor_attributes
-    assert_not_nil doctor_attrs[:first_name]
-    assert_not_nil doctor_attrs[:specialization]
+    assert_nothing_raised do
+      assert_valid_doctor_attributes(doctor_attrs)
+    end
 
-    # Test patient attribute generation
+    # Test invalid years of experience
+    invalid_doctor_attrs = doctor_attrs.merge(years_of_experience: -1)
+    assert_raises(Minitest::Assertion) do
+      assert_valid_doctor_attributes(invalid_doctor_attrs)
+    end
+
+    # Test invalid email
+    invalid_doctor_attrs = doctor_attrs.merge(email: "invalid-email")
+    assert_raises(Minitest::Assertion) do
+      assert_valid_doctor_attributes(invalid_doctor_attrs)
+    end
+  end
+
+  test "patient validation helpers work" do
+    # Test valid patient attributes
     patient_attrs = sample_patient_attributes
-    assert_not_nil patient_attrs[:first_name]
-    assert_not_nil patient_attrs[:date_of_birth]
+    assert_nothing_raised do
+      assert_valid_patient_attributes(patient_attrs)
+    end
 
+    # Test invalid gender
+    invalid_patient_attrs = patient_attrs.merge(gender: "invalid_gender")
+    assert_raises(Minitest::Assertion) do
+      assert_valid_patient_attributes(invalid_patient_attrs)
+    end
+
+    # Test future date of birth
+    invalid_patient_attrs = patient_attrs.merge(date_of_birth: Date.current + 1.day)
+    assert_raises(Minitest::Assertion) do
+      assert_valid_patient_attributes(invalid_patient_attrs)
+    end
+  end
+
+  test "sample attribute generators work" do
     # Test appointment attribute generation
     appointment_attrs = sample_appointment_attributes
     assert_not_nil appointment_attrs[:appointment_date]

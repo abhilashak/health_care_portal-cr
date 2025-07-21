@@ -68,14 +68,17 @@ module HealthcareTestHelper
     }
   end
 
-  # Generate sample appointment data
+  # Generate sample appointment data matching database schema
   def sample_appointment_attributes
     {
-      appointment_date: valid_appointment_date,
-      appointment_time: valid_appointment_time,
-      status: [ "scheduled", "confirmed", "completed", "cancelled" ].sample,
-      notes: "Routine checkup and consultation",
-      duration_minutes: [ 15, 30, 45, 60 ].sample
+      doctor_id: nil, # Will be set when we have actual doctors
+      patient_id: nil, # Will be set when we have actual patients
+      scheduled_at: valid_appointment_datetime,
+      status: [ "pending", "confirmed", "in_progress", "completed", "cancelled", "no_show", "rescheduled" ].sample,
+      notes: "Routine checkup and consultation for patient health assessment",
+      duration_minutes: [ 15, 30, 45, 60, 90 ].sample,
+      appointment_type: [ "routine", "follow_up", "emergency", "consultation", "procedure", "surgery", "therapy", "screening", "vaccination", "other" ].sample,
+      confirmed_at: nil # Will be set based on status
     }
   end
 
@@ -95,6 +98,21 @@ module HealthcareTestHelper
   def assert_business_hours_time(time)
     hour = time.hour
     assert hour >= 9 && hour <= 17, "Appointment time should be during business hours (9 AM - 5 PM)"
+  end
+
+  # Generate valid appointment datetime (combines date and time)
+  def valid_appointment_datetime
+    appointment_date = valid_appointment_date
+    appointment_time = valid_appointment_time
+
+    # Combine date and time
+    DateTime.new(
+      appointment_date.year,
+      appointment_date.month,
+      appointment_date.day,
+      appointment_time.hour,
+      appointment_time.min
+    )
   end
 
   # Healthcare facility validation helpers
@@ -172,6 +190,33 @@ module HealthcareTestHelper
 
     # Validate emergency contact
     assert attrs[:emergency_contact_name].length >= 2, "Emergency contact name should have meaningful length"
+  end
+
+  # Appointment validation helpers
+  def assert_valid_appointment_attributes(attrs)
+    # Required fields
+    assert attrs.key?(:doctor_id), "Appointment should have doctor_id field"
+    assert attrs.key?(:patient_id), "Appointment should have patient_id field"
+    assert_not_nil attrs[:scheduled_at], "Appointment should have scheduled_at"
+    assert_not_nil attrs[:status], "Appointment should have status"
+    assert_not_nil attrs[:duration_minutes], "Appointment should have duration_minutes"
+    assert_not_nil attrs[:appointment_type], "Appointment should have appointment_type"
+
+    # Validate status
+    valid_statuses = [ "pending", "confirmed", "in_progress", "completed", "cancelled", "no_show", "rescheduled" ]
+    assert_includes valid_statuses, attrs[:status], "Invalid appointment status"
+
+    # Validate appointment type
+    valid_types = [ "routine", "follow_up", "emergency", "consultation", "procedure", "surgery", "therapy", "screening", "vaccination", "other" ]
+    assert_includes valid_types, attrs[:appointment_type], "Invalid appointment type"
+
+    # Validate duration
+    assert attrs[:duration_minutes] >= 5, "Duration should be at least 5 minutes"
+    assert attrs[:duration_minutes] <= 480, "Duration should not exceed 8 hours"
+
+    # Validate scheduled_at is reasonable
+    assert attrs[:scheduled_at] >= 1.hour.ago, "Appointment should not be too far in the past"
+    assert attrs[:scheduled_at] <= 2.years.from_now, "Appointment should not be too far in the future"
   end
 
   # HIPAA compliance helpers

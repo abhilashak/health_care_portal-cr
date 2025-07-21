@@ -12,6 +12,7 @@ class ExampleHealthcareModelTest < ActiveSupport::TestCase
     assert_respond_to self, :valid_email
     assert_respond_to self, :valid_appointment_date
     assert_respond_to self, :valid_appointment_time
+    assert_respond_to self, :valid_appointment_datetime
     assert_respond_to self, :sample_hospital_attributes
     assert_respond_to self, :sample_clinic_attributes
     assert_respond_to self, :sample_doctor_attributes
@@ -35,6 +36,11 @@ class ExampleHealthcareModelTest < ActiveSupport::TestCase
     # Test appointment time generation
     appointment_time = valid_appointment_time
     assert_business_hours_time(appointment_time)
+
+    # Test appointment datetime generation
+    appointment_datetime = valid_appointment_datetime
+    assert appointment_datetime.is_a?(DateTime), "Should return a DateTime object"
+    assert appointment_datetime >= DateTime.current, "Appointment datetime should be in the future"
   end
 
   test "hospital attributes generator works with STI" do
@@ -106,6 +112,27 @@ class ExampleHealthcareModelTest < ActiveSupport::TestCase
     assert_includes valid_genders, patient_attrs[:gender]
   end
 
+  test "appointment attributes generator works with database schema" do
+    # Test appointment attribute generation
+    appointment_attrs = sample_appointment_attributes
+    assert appointment_attrs.key?(:doctor_id), "Should have doctor_id field"
+    assert appointment_attrs.key?(:patient_id), "Should have patient_id field"
+    assert_not_nil appointment_attrs[:scheduled_at], "Should have scheduled_at"
+    assert_not_nil appointment_attrs[:status], "Should have status"
+    assert_not_nil appointment_attrs[:duration_minutes], "Should have duration_minutes"
+    assert_not_nil appointment_attrs[:appointment_type], "Should have appointment_type"
+
+    # Test appointment-specific validation
+    assert_valid_appointment_attributes(appointment_attrs)
+
+    # Test status and type validation
+    valid_statuses = [ "pending", "confirmed", "in_progress", "completed", "cancelled", "no_show", "rescheduled" ]
+    assert_includes valid_statuses, appointment_attrs[:status]
+
+    valid_types = [ "routine", "follow_up", "emergency", "consultation", "procedure", "surgery", "therapy", "screening", "vaccination", "other" ]
+    assert_includes valid_types, appointment_attrs[:appointment_type]
+  end
+
   test "healthcare facility type validation works" do
     # Test hospital healthcare type validation
     hospital_attrs = sample_hospital_attributes
@@ -161,11 +188,52 @@ class ExampleHealthcareModelTest < ActiveSupport::TestCase
     end
   end
 
-  test "sample attribute generators work" do
-    # Test appointment attribute generation
+  test "appointment validation helpers work" do
+    # Test valid appointment attributes
     appointment_attrs = sample_appointment_attributes
-    assert_not_nil appointment_attrs[:appointment_date]
-    assert_not_nil appointment_attrs[:status]
+    assert_nothing_raised do
+      assert_valid_appointment_attributes(appointment_attrs)
+    end
+
+    # Test invalid status
+    invalid_appointment_attrs = appointment_attrs.merge(status: "invalid_status")
+    assert_raises(Minitest::Assertion) do
+      assert_valid_appointment_attributes(invalid_appointment_attrs)
+    end
+
+    # Test invalid duration
+    invalid_appointment_attrs = appointment_attrs.merge(duration_minutes: 2) # Too short
+    assert_raises(Minitest::Assertion) do
+      assert_valid_appointment_attributes(invalid_appointment_attrs)
+    end
+
+    # Test invalid appointment type
+    invalid_appointment_attrs = appointment_attrs.merge(appointment_type: "invalid_type")
+    assert_raises(Minitest::Assertion) do
+      assert_valid_appointment_attributes(invalid_appointment_attrs)
+    end
+  end
+
+  test "comprehensive healthcare system validation" do
+    # Test that we can generate valid data for all entities
+    hospital = sample_hospital_attributes
+    clinic = sample_clinic_attributes
+    doctor = sample_doctor_attributes
+    patient = sample_patient_attributes
+    appointment = sample_appointment_attributes
+
+    # Test that all entities have proper validation
+    assert_nothing_raised do
+      assert_valid_hospital_attributes(hospital)
+      assert_valid_clinic_attributes(clinic)
+      assert_valid_doctor_attributes(doctor)
+      assert_valid_patient_attributes(patient)
+      assert_valid_appointment_attributes(appointment)
+    end
+
+    # Test that all entities have unique emails
+    assert hospital[:email] != clinic[:email], "Hospital and clinic should have different emails"
+    assert doctor[:email] != patient[:email], "Doctor and patient should have different emails"
   end
 
   test "healthcare data privacy validation works" do

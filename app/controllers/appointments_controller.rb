@@ -3,7 +3,7 @@ class AppointmentsController < ApplicationController
 
   # GET /appointments
   def index
-    @appointments = Appointment.all
+    @pagy, @appointments = pagy(Appointment.includes(:doctor, :patient).order(appointment_date: :desc))
     respond_to do |format|
       format.html
       format.json { render json: @appointments }
@@ -21,14 +21,14 @@ class AppointmentsController < ApplicationController
   # GET /appointments/new
   def new
     @appointment = Appointment.new
-    @doctors = Doctor.all
-    @patients = Patient.all
+    @doctors = Doctor.limit(50)
+    @patients = Patient.limit(50)
   end
 
   # GET /appointments/1/edit
   def edit
-    @doctors = Doctor.all
-    @patients = Patient.all
+    @doctors = Doctor.limit(50)
+    @patients = Patient.limit(50)
   end
 
   # POST /appointments
@@ -40,8 +40,8 @@ class AppointmentsController < ApplicationController
         format.html { redirect_to @appointment, notice: "Appointment was successfully created." }
         format.json { render json: @appointment, status: :created }
       else
-        @doctors = Doctor.all
-        @patients = Patient.all
+        @doctors = Doctor.limit(50)
+        @patients = Patient.limit(50)
         format.html { render :new, status: :unprocessable_entity }
         format.json { render json: @appointment.errors, status: :unprocessable_entity }
       end
@@ -55,8 +55,8 @@ class AppointmentsController < ApplicationController
         format.html { redirect_to @appointment, notice: "Appointment was successfully updated." }
         format.json { render json: @appointment }
       else
-        @doctors = Doctor.all
-        @patients = Patient.all
+        @doctors = Doctor.limit(50)
+        @patients = Patient.limit(50)
         format.html { render :edit, status: :unprocessable_entity }
         format.json { render json: @appointment.errors, status: :unprocessable_entity }
       end

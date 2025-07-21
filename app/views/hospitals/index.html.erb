@@ -56,5 +56,14 @@
         </div>
       </div>
     </div>
+    <!-- Pagination -->
+    <div class="mt-6 flex items-center justify-between">
+      <div class="text-sm text-gray-700">
+        Showing <%= @pagy.from %> to <%= @pagy.to %> of <%= @pagy.count %> results
+      </div>
+      <div class="flex space-x-2">
+        <%== pagy_nav(@pagy) %>
+      </div>
+    </div>
   </div>
 </div>

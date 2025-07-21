@@ -12,7 +12,7 @@ class PatientsController < ApplicationController
 
   # GET /patients
   def index
-    @patients = Patient.all
+    @pagy, @patients = pagy(Patient.all)
     respond_to do |format|
       format.html
       format.json { render json: @patients }

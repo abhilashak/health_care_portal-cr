@@ -3,7 +3,10 @@ class ApplicationController < ActionController::Base
   allow_browser versions: :modern
 
   # Include authentication helpers
-  include ApplicationHelper
+  include Pagy::Backend
+
+  # Make authentication methods available in views
+  helper_method :logged_in?, :current_user, :current_user_type
 
   # Basic index action for healthcare portal root route
   def index
@@ -18,17 +21,17 @@ class ApplicationController < ActionController::Base
     @hospital_search = params[:hospital_search]
     @clinic_search = params[:clinic_search]
 
-    # Filter hospitals and clinics based on search
-    @hospitals = if @hospital_search.present?
-      Hospital.where("name ILIKE ? OR address ILIKE ?", "%#{@hospital_search}%", "%#{@hospital_search}%")
+    # Filter hospitals and clinics based on search with pagination
+    @hospitals_pagy, @hospitals = if @hospital_search.present?
+      pagy(Hospital.where("name ILIKE ? OR address ILIKE ?", "%#{@hospital_search}%", "%#{@hospital_search}%"))
     else
-      Hospital.all
+      pagy(Hospital.all)
     end
 
-    @clinics = if @clinic_search.present?
-      Clinic.where("name ILIKE ? OR address ILIKE ?", "%#{@clinic_search}%", "%#{@clinic_search}%")
+    @clinics_pagy, @clinics = if @clinic_search.present?
+      pagy(Clinic.where("name ILIKE ? OR address ILIKE ?", "%#{@clinic_search}%", "%#{@clinic_search}%"))
     else
-      Clinic.all
+      pagy(Clinic.all)
     end
   end
 
@@ -48,5 +51,41 @@ class ApplicationController < ActionController::Base
         session_cookie_size: request.cookies["_health_care_portal_session"]&.length
       }
     }
+  end
+
+  def current_user
+    return nil unless session[:user_id] && session[:user_type]
+
+    case session[:user_type]
+    when "doctor"
+      Doctor.find_by(id: session[:user_id])
+    when "patient"
+      Patient.find_by(id: session[:user_id])
+    when "facility"
+      HealthcareFacility.find_by(id: session[:user_id])
+    end
+  end
+
+  def current_user_type
+    session[:user_type]
+  end
+
+  def logged_in?
+    current_user.present?
+  end
+
+  def require_login
+    unless logged_in?
+      flash[:alert] = "Please log in to access this page."
+      redirect_to login_path
+    end
+  end
+
+  def require_user_type(user_type)
+    require_login
+    unless current_user_type == user_type
+      flash[:alert] = "You don't have permission to access this page."
+      redirect_to root_path
+    end
   end
 end

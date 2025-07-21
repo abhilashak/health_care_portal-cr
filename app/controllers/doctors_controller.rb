@@ -12,7 +12,7 @@ class DoctorsController < ApplicationController
 
   # GET /doctors
   def index
-    @doctors = Doctor.all
+    @pagy, @doctors = pagy(Doctor.includes(:hospital, :clinic))
     respond_to do |format|
       format.html
       format.json { render json: @doctors }
@@ -30,14 +30,14 @@ class DoctorsController < ApplicationController
   # GET /doctors/new
   def new
     @doctor = Doctor.new
-    @hospitals = Hospital.all
-    @clinics = Clinic.all
+    @hospitals = Hospital.limit(50)
+    @clinics = Clinic.limit(50)
   end
 
   # GET /doctors/1/edit
   def edit
-    @hospitals = Hospital.all
-    @clinics = Clinic.all
+    @hospitals = Hospital.limit(50)
+    @clinics = Clinic.limit(50)
   end
 
   # POST /doctors
@@ -49,8 +49,8 @@ class DoctorsController < ApplicationController
         format.html { redirect_to @doctor, notice: "Doctor was successfully created." }
         format.json { render json: @doctor, status: :created }
       else
-        @hospitals = Hospital.all
-        @clinics = Clinic.all
+        @hospitals = Hospital.limit(50)
+        @clinics = Clinic.limit(50)
         format.html { render :new, status: :unprocessable_entity }
         format.json { render json: @doctor.errors, status: :unprocessable_entity }
       end
@@ -64,8 +64,8 @@ class DoctorsController < ApplicationController
         format.html { redirect_to @doctor, notice: "Doctor was successfully updated." }
         format.json { render json: @doctor }
       else
-        @hospitals = Hospital.all
-        @clinics = Clinic.all
+        @hospitals = Hospital.limit(50)
+        @clinics = Clinic.limit(50)
         format.html { render :edit, status: :unprocessable_entity }
         format.json { render json: @doctor.errors, status: :unprocessable_entity }
       end

@@ -3,7 +3,7 @@ class HospitalsController < ApplicationController
 
   # GET /hospitals
   def index
-    @hospitals = Hospital.all
+    @pagy, @hospitals = pagy(Hospital.all)
     respond_to do |format|
       format.html
       format.json { render json: @hospitals }

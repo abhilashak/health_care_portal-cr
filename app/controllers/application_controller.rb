@@ -4,8 +4,28 @@ class ApplicationController < ActionController::Base
 
   # Basic index action for healthcare portal root route
   def index
-    # This will render app/views/application/index.html.erb when created
-    # For now, we'll render inline content
-    render plain: "Healthcare Portal - Coming Soon"
+    @hospitals_count = Hospital.count
+    @clinics_count = Clinic.count
+    @doctors_count = Doctor.count
+    @patients_count = Patient.count
+    @appointments_count = Appointment.count
+    @upcoming_appointments = Appointment.upcoming.count
+
+    # Search functionality
+    @hospital_search = params[:hospital_search]
+    @clinic_search = params[:clinic_search]
+
+    # Filter hospitals and clinics based on search
+    @hospitals = if @hospital_search.present?
+      Hospital.where("name ILIKE ? OR address ILIKE ?", "%#{@hospital_search}%", "%#{@hospital_search}%")
+    else
+      Hospital.all
+    end
+
+    @clinics = if @clinic_search.present?
+      Clinic.where("name ILIKE ? OR address ILIKE ?", "%#{@clinic_search}%", "%#{@clinic_search}%")
+    else
+      Clinic.all
+    end
   end
 end

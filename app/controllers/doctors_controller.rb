@@ -1,5 +1,14 @@
 class DoctorsController < ApplicationController
   before_action :set_doctor, only: [ :show, :edit, :update, :destroy ]
+  before_action :require_doctor_access, only: [ :dashboard ]
+
+  # GET /doctor/dashboard
+  def dashboard
+    @doctor = current_user
+    @upcoming_appointments = @doctor.appointments.upcoming.order(:appointment_date)
+    @total_patients = @doctor.total_patients_count
+    @recent_appointments = @doctor.appointments.order(appointment_date: :desc).limit(5)
+  end
 
   # GET /doctors
   def index
@@ -84,6 +93,10 @@ class DoctorsController < ApplicationController
   end
 
   def doctor_params
-    params.require(:doctor).permit(:first_name, :last_name, :specialization, :hospital_id, :clinic_id)
+    params.require(:doctor).permit(:first_name, :last_name, :specialization, :hospital_id, :clinic_id, :email, :password, :password_confirmation)
+  end
+
+  def require_doctor_access
+    require_user_type("doctor")
   end
 end

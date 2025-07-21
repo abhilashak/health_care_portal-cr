@@ -1,4 +1,7 @@
 class Patient < ApplicationRecord
+  # Rails 8 Authentication
+  has_secure_password
+
   # Associations
   has_many :appointments, dependent: :destroy
   has_many :doctors, through: :appointments
@@ -9,6 +12,7 @@ class Patient < ApplicationRecord
   validates :email, presence: true, length: { maximum: 255 }, uniqueness: true,
             format: { with: URI::MailTo::EMAIL_REGEXP, message: "must be a valid email address" }
   validates :date_of_birth, presence: true
+  validates :password, length: { minimum: 6 }, if: :password_required?
 
   # Date validations
   validate :date_of_birth_must_be_in_past
@@ -132,5 +136,9 @@ class Patient < ApplicationRecord
     if date_of_birth > Date.current
       errors.add(:date_of_birth, "cannot be in the future")
     end
+  end
+
+  def password_required?
+    new_record? || password.present?
   end
 end

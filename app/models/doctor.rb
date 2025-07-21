@@ -1,4 +1,7 @@
 class Doctor < ApplicationRecord
+  # Rails 8 Authentication
+  has_secure_password
+
   # Associations
   belongs_to :hospital, class_name: "HealthcareFacility", optional: true
   belongs_to :clinic, class_name: "HealthcareFacility", optional: true
@@ -9,6 +12,9 @@ class Doctor < ApplicationRecord
   validates :first_name, presence: true, length: { maximum: 100 }
   validates :last_name, presence: true, length: { maximum: 100 }
   validates :specialization, presence: true, length: { maximum: 150, minimum: 3 }
+  validates :email, presence: true, length: { maximum: 255 }, uniqueness: true,
+            format: { with: URI::MailTo::EMAIL_REGEXP, message: "must be a valid email address" }
+  validates :password, length: { minimum: 6 }, if: :password_required?
 
   # Business logic validations
   validate :cannot_be_associated_with_same_facility_as_both_hospital_and_clinic
@@ -96,5 +102,11 @@ class Doctor < ApplicationRecord
   def independent_doctor_allowed?
     # Allow independent doctors for certain specializations
     [ "Dermatology", "Psychiatry", "Private Practice" ].include?(specialization)
+  end
+
+  private
+
+  def password_required?
+    new_record? || password.present?
   end
 end

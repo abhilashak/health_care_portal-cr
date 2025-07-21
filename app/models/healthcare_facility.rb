@@ -1,4 +1,7 @@
 class HealthcareFacility < ApplicationRecord
+  # Rails 8 Authentication
+  has_secure_password
+
   # Single Table Inheritance (STI) - base class for Hospital and Clinic
 
   # Associations
@@ -20,6 +23,7 @@ class HealthcareFacility < ApplicationRecord
   validates :status, presence: true, inclusion: { in: %w[active inactive suspended] }
   validates :website, length: { maximum: 500 }, allow_blank: true,
             format: { with: /\Ahttps?:\/\/.+\z/, message: "must be a valid URL" }, if: :website?
+  validates :password, length: { minimum: 6 }, if: :password_required?
 
   # Scopes
   scope :hospitals, -> { where(type: "Hospital") }
@@ -36,5 +40,11 @@ class HealthcareFacility < ApplicationRecord
 
   def clinic?
     type == "Clinic"
+  end
+
+  private
+
+  def password_required?
+    new_record? || password.present?
   end
 end

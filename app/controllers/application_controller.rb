@@ -2,6 +2,9 @@ class ApplicationController < ActionController::Base
   # Only allow modern browsers supporting webp images, web push, badges, import maps, CSS nesting, and CSS :has()
   allow_browser versions: :modern
 
+  # Include authentication helpers
+  include ApplicationHelper
+
   # Basic index action for healthcare portal root route
   def index
     @hospitals_count = Hospital.count
@@ -27,5 +30,23 @@ class ApplicationController < ActionController::Base
     else
       Clinic.all
     end
+  end
+
+  def debug_session
+    render json: {
+      session_data: {
+        user_id: session[:user_id],
+        user_type: session[:user_type]
+      },
+      authentication_status: {
+        logged_in: logged_in?,
+        current_user_email: current_user&.email,
+        current_user_type: current_user_type
+      },
+      cookie_info: {
+        session_cookie_exists: request.cookies.key?("_health_care_portal_session"),
+        session_cookie_size: request.cookies["_health_care_portal_session"]&.length
+      }
+    }
   end
 end

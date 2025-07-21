@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_07_21_141220) do
+ActiveRecord::Schema[8.0].define(version: 2025_07_21_183340) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -43,7 +43,10 @@ ActiveRecord::Schema[8.0].define(version: 2025_07_21_141220) do
     t.bigint "clinic_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "email"
+    t.string "password_digest"
     t.index ["clinic_id"], name: "index_doctors_on_clinic_id"
+    t.index ["email"], name: "index_doctors_on_email", unique: true
     t.index ["first_name", "last_name"], name: "index_doctors_on_full_name"
     t.index ["hospital_id"], name: "index_doctors_on_hospital_id"
     t.index ["specialization"], name: "index_doctors_on_specialization"
@@ -79,6 +82,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_07_21_141220) do
     t.text "services", default: [], array: true
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "password_digest"
     t.index ["accepts_insurance"], name: "index_healthcare_facilities_that_accept_insurance", where: "(accepts_insurance = true)"
     t.index ["accepts_new_patients"], name: "index_healthcare_facilities_accepting_new_patients", where: "(accepts_new_patients = true)"
     t.index ["active"], name: "index_healthcare_facilities_on_active_status", where: "(active = true)"
@@ -102,6 +106,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_07_21_141220) do
     t.string "email", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "password_digest"
     t.index ["date_of_birth"], name: "index_patients_on_date_of_birth"
     t.index ["email"], name: "unique_patient_emails", unique: true
     t.index ["first_name", "last_name"], name: "index_patients_on_full_name"

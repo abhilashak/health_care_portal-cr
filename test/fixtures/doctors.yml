@@ -1,0 +1,59 @@
+# Doctors with Healthcare Facility Associations
+
+# Hospital Doctors
+dr_smith_cardiology:
+  first_name: Dr. John
+  last_name: Smith
+  specialization: Cardiology
+  hospital: general_hospital
+  clinic: ~
+  created_at: <%= Time.current %>
+  updated_at: <%= Time.current %>
+
+dr_johnson_emergency:
+  first_name: Dr. Sarah
+  last_name: Johnson
+  specialization: Emergency Medicine
+  hospital: general_hospital
+  clinic: ~
+  created_at: <%= Time.current %>
+  updated_at: <%= Time.current %>
+
+dr_williams_surgery:
+  first_name: Dr. Michael
+  last_name: Williams
+  specialization: General Surgery
+  hospital: general_hospital
+  clinic: ~
+  created_at: <%= Time.current %>
+  updated_at: <%= Time.current %>
+
+# Clinic Doctors
+dr_brown_family:
+  first_name: Dr. Jennifer
+  last_name: Brown
+  specialization: Family Medicine
+  hospital: ~
+  clinic: bay_area_family_clinic
+  created_at: <%= Time.current %>
+  updated_at: <%= Time.current %>
+
+dr_davis_pediatrics:
+  first_name: Dr. Robert
+  last_name: Davis
+  specialization: Pediatrics
+  hospital: ~
+  clinic: bay_area_family_clinic
+  created_at: <%= Time.current %>
+  updated_at: <%= Time.current %>
+
+dr_miller_dermatology:
+  first_name: Dr. Lisa
+  last_name: Miller
+  specialization: Dermatology
+  hospital: ~
+  clinic: bay_area_family_clinic
+  created_at: <%= Time.current %>
+  updated_at: <%= Time.current %>
+
+ 

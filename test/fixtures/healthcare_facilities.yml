@@ -1,0 +1,51 @@
+# Healthcare Facilities (STI: Hospital and Clinic)
+
+# Hospitals
+general_hospital:
+  type: Hospital
+  name: General Hospital
+  address: 1234 Medical Center Drive
+  phone: +14155551234
+  email: info@generalhospital.com
+  registration_number: HOS001
+  active: true
+  status: active
+  created_at: <%= Time.current %>
+  updated_at: <%= Time.current %>
+
+childrens_hospital:
+  type: Hospital
+  name: Children's Hospital
+  address: 5678 Kids Care Boulevard
+  phone: +14155555678
+  email: info@childrenshospital.org
+  registration_number: HOS002
+  active: true
+  status: active
+  created_at: <%= Time.current %>
+  updated_at: <%= Time.current %>
+
+# Clinics
+bay_area_family_clinic:
+  type: Clinic
+  name: Bay Area Family Clinic
+  address: 9012 Family Health Street
+  phone: +14155559012
+  email: appointments@bayareafamily.com
+  registration_number: CLI001
+  active: true
+  status: active
+  created_at: <%= Time.current %>
+  updated_at: <%= Time.current %>
+
+urgent_care_clinic:
+  type: Clinic
+  name: QuickCare Urgent Care
+  address: 3456 Urgent Care Avenue
+  phone: +14155553456
+  email: info@quickcareurgent.com
+  registration_number: CLI002
+  active: true
+  status: active
+  created_at: <%= Time.current %>
+  updated_at: <%= Time.current %> 

@@ -67,3 +67,6 @@ Thumbs.db
 # Local configuration files
 /config/database.local.yml
 /config/secrets.local.yml
+
+/app/assets/builds/*
+!/app/assets/builds/.keep

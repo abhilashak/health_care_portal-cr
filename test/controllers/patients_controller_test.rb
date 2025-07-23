@@ -14,7 +14,8 @@ class PatientsControllerTest < ActionDispatch::IntegrationTest
       email: "info@generalhospital.com",
       registration_number: "HOS001",
       active: true,
-      status: "active"
+      status: "active",
+      password: "password123"
     )
 
     @clinic = HealthcareFacility.create!(
@@ -25,7 +26,8 @@ class PatientsControllerTest < ActionDispatch::IntegrationTest
       email: "appointments@bayareafamily.com",
       registration_number: "CLI001",
       active: true,
-      status: "active"
+      status: "active",
+      password: "password123"
     )
 
     # Create test doctors
@@ -33,14 +35,18 @@ class PatientsControllerTest < ActionDispatch::IntegrationTest
       first_name: "Dr. John",
       last_name: "Smith",
       specialization: "Cardiology",
-      hospital: @hospital
+      hospital: @hospital,
+      email: "dr.john.smith@hospital.com",
+      password: "password123"
     )
 
     @family_doctor = Doctor.create!(
       first_name: "Dr. Jennifer",
       last_name: "Brown",
       specialization: "Family Medicine",
-      clinic: @clinic
+      clinic: @clinic,
+      email: "dr.jennifer.brown@clinic.com",
+      password: "password123"
     )
 
     # Create test patients
@@ -48,21 +54,24 @@ class PatientsControllerTest < ActionDispatch::IntegrationTest
       first_name: "John",
       last_name: "Doe",
       email: "john.doe@email.com",
-      date_of_birth: 30.years.ago.to_date
+      date_of_birth: 30.years.ago.to_date,
+      password: "password123"
     )
 
     @pediatric_patient = Patient.create!(
       first_name: "Sarah",
       last_name: "Smith",
       email: "parent.smith@email.com",
-      date_of_birth: 8.years.ago.to_date
+      date_of_birth: 8.years.ago.to_date,
+      password: "password123"
     )
 
     @senior_patient = Patient.create!(
       first_name: "William",
       last_name: "Davis",
       email: "william.davis@email.com",
-      date_of_birth: 75.years.ago.to_date
+      date_of_birth: 75.years.ago.to_date,
+      password: "password123"
     )
   end
 

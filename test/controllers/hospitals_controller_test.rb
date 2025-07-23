@@ -14,7 +14,8 @@ class HospitalsControllerTest < ActionDispatch::IntegrationTest
       email: "info@generalhospital.com",
       registration_number: "HOS001",
       active: true,
-      status: "active"
+      status: "active",
+      password: "password123"
     )
 
     @other_hospital = HealthcareFacility.create!(
@@ -25,7 +26,8 @@ class HospitalsControllerTest < ActionDispatch::IntegrationTest
       email: "info@childrenshospital.org",
       registration_number: "HOS002",
       active: true,
-      status: "active"
+      status: "active",
+      password: "password123"
     )
 
     # Create test doctor associated with hospital
@@ -33,7 +35,9 @@ class HospitalsControllerTest < ActionDispatch::IntegrationTest
       first_name: "Dr. John",
       last_name: "Smith",
       specialization: "Cardiology",
-      hospital: @hospital
+      hospital: @hospital,
+      email: "dr.john.smith@hospital.com",
+      password: "password123"
     )
   end
 

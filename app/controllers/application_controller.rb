@@ -78,14 +78,18 @@ class ApplicationController < ActionController::Base
     unless logged_in?
       flash[:alert] = "Please log in to access this page."
       redirect_to login_path
+      nil
     end
   end
 
   def require_user_type(user_type)
     require_login
+    return if performed? # Stop if a redirect was already performed
+
     unless current_user_type == user_type
       flash[:alert] = "You don't have permission to access this page."
       redirect_to root_path
+      nil
     end
   end
 end

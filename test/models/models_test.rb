@@ -26,7 +26,8 @@ class ModelsTest < ActiveSupport::TestCase
       email: "test@hospital.com",
       registration_number: "HOS001",
       active: true,
-      status: "active"
+      status: "active",
+      password: "password123"
     )
 
     assert hospital.valid?, "Hospital should be valid: #{hospital.errors.full_messages}"
@@ -46,7 +47,8 @@ class ModelsTest < ActiveSupport::TestCase
       email: "test@clinic.com",
       registration_number: "CLI001",
       active: true,
-      status: "active"
+      status: "active",
+      password: "password123"
     )
 
     assert clinic.valid?, "Clinic should be valid: #{clinic.errors.full_messages}"
@@ -67,7 +69,8 @@ class ModelsTest < ActiveSupport::TestCase
       email: "doctors@hospital.com",
       registration_number: "HOS002",
       active: true,
-      status: "active"
+      status: "active",
+      password: "password123"
     )
 
     # Create doctor
@@ -75,7 +78,9 @@ class ModelsTest < ActiveSupport::TestCase
       first_name: "Dr. Test",
       last_name: "Physician",
       specialization: "Internal Medicine",
-      hospital_id: hospital.id
+      hospital_id: hospital.id,
+      email: "dr.test@hospital.com",
+      password: "password123"
     )
 
     assert doctor.valid?, "Doctor should be valid: #{doctor.errors.full_messages}"
@@ -101,7 +106,8 @@ class ModelsTest < ActiveSupport::TestCase
       first_name: "Test",
       last_name: "Patient",
       email: "test.patient@email.com",
-      date_of_birth: 30.years.ago.to_date
+      date_of_birth: 30.years.ago.to_date,
+      password: "password123"
     )
 
     assert patient.valid?, "Patient should be valid: #{patient.errors.full_messages}"
@@ -125,21 +131,25 @@ class ModelsTest < ActiveSupport::TestCase
       email: "apt@hospital.com",
       registration_number: "HOS004",
       active: true,
-      status: "active"
+      status: "active",
+      password: "password123"
     )
 
     doctor = Doctor.create!(
       first_name: "Dr. Appointment",
       last_name: "Doctor",
       specialization: "Family Medicine",
-      hospital_id: hospital.id
+      hospital_id: hospital.id,
+      email: "dr.appointment@hospital.com",
+      password: "password123"
     )
 
     patient = Patient.create!(
       first_name: "Appointment",
       last_name: "Patient",
       email: "apt.patient@email.com",
-      date_of_birth: 25.years.ago.to_date
+      date_of_birth: 25.years.ago.to_date,
+      password: "password123"
     )
 
     # Create appointment
@@ -183,21 +193,25 @@ class ModelsTest < ActiveSupport::TestCase
       email: "assoc@hospital.com",
       registration_number: "HOS003",
       active: true,
-      status: "active"
+      status: "active",
+      password: "password123"
     )
 
     doctor = Doctor.create!(
       first_name: "Dr. Association",
-      last_name: "Test",
+      last_name: "Doctor",
       specialization: "Cardiology",
-      hospital_id: hospital.id
+      hospital_id: hospital.id,
+      email: "dr.association@hospital.com",
+      password: "password123"
     )
 
     patient = Patient.create!(
       first_name: "Association",
       last_name: "Patient",
       email: "assoc.patient@email.com",
-      date_of_birth: 35.years.ago.to_date
+      date_of_birth: 40.years.ago.to_date,
+      password: "password123"
     )
 
     appointment = Appointment.create!(

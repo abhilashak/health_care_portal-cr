@@ -14,7 +14,8 @@ class AppointmentsControllerTest < ActionDispatch::IntegrationTest
       email: "info@generalhospital.com",
       registration_number: "HOS001",
       active: true,
-      status: "active"
+      status: "active",
+      password: "password123"
     )
 
     @clinic = HealthcareFacility.create!(
@@ -25,7 +26,8 @@ class AppointmentsControllerTest < ActionDispatch::IntegrationTest
       email: "appointments@bayareafamily.com",
       registration_number: "CLI001",
       active: true,
-      status: "active"
+      status: "active",
+      password: "password123"
     )
 
     # Create test doctors
@@ -33,14 +35,18 @@ class AppointmentsControllerTest < ActionDispatch::IntegrationTest
       first_name: "Dr. John",
       last_name: "Smith",
       specialization: "Cardiology",
-      hospital: @hospital
+      hospital: @hospital,
+      email: "dr.john.smith@hospital.com",
+      password: "password123"
     )
 
     @family_doctor = Doctor.create!(
       first_name: "Dr. Jennifer",
       last_name: "Brown",
       specialization: "Family Medicine",
-      clinic: @clinic
+      clinic: @clinic,
+      email: "dr.jennifer.brown@clinic.com",
+      password: "password123"
     )
 
     # Create test patients
@@ -48,36 +54,44 @@ class AppointmentsControllerTest < ActionDispatch::IntegrationTest
       first_name: "John",
       last_name: "Doe",
       email: "john.doe@email.com",
-      date_of_birth: 30.years.ago.to_date
+      date_of_birth: 30.years.ago.to_date,
+      password: "password123"
     )
 
     @patient2 = Patient.create!(
       first_name: "Jane",
       last_name: "Smith",
       email: "jane.smith@email.com",
-      date_of_birth: 25.years.ago.to_date
+      date_of_birth: 25.years.ago.to_date,
+      password: "password123"
     )
 
     # Create test appointments
     @scheduled_appointment = Appointment.create!(
       doctor: @doctor,
       patient: @patient,
-      appointment_date: 1.week.from_now.change(hour: 14, min: 0),
-      status: "scheduled"
+      appointment_date: 1.week.from_now.change(hour: 14, min: 0), # 2 PM on a weekday
+      status: "scheduled",
+      duration_minutes: 30,
+      appointment_type: "routine"
     )
 
     @completed_appointment = Appointment.create!(
       doctor: @family_doctor,
       patient: @patient,
-      appointment_date: 1.week.ago,
-      status: "completed"
+      appointment_date: 30.minutes.ago, # Just 30 minutes ago, whatever the current time is
+      status: "completed",
+      duration_minutes: 30,
+      appointment_type: "routine"
     )
 
     @emergency_appointment = Appointment.create!(
       doctor: @doctor,
       patient: @patient2,
-      appointment_date: 2.days.from_now.change(hour: 9, min: 0),
-      status: "scheduled"
+      appointment_date: 2.days.from_now.change(hour: 9, min: 0), # 9 AM on a weekday
+      status: "scheduled",
+      duration_minutes: 30,
+      appointment_type: "emergency"
     )
   end
 

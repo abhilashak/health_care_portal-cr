@@ -24,4 +24,39 @@ module ApplicationHelper
       phone
     end
   end
+
+  # Returns the appropriate dashboard path based on user type
+  def dashboard_path_for_user
+    case current_user_type
+    when "doctor"
+      doctor_dashboard_path
+    when "patient"
+      patient_dashboard_path
+    when "facility"
+      facility_dashboard_path
+    else
+      root_path
+    end
+  end
+
+  # Returns a user-friendly display name for the current user
+  def current_user_display_name
+    current_user&.display_name || "Guest"
+  end
+
+  # Returns the appropriate CSS class for flash messages
+  def flash_message_class(type)
+    case type
+    when "notice", "success"
+      "bg-green-100 border-green-400 text-green-700"
+    when "alert", "error"
+      "bg-red-100 border-red-400 text-red-700"
+    when "warning"
+      "bg-yellow-100 border-yellow-400 text-yellow-700"
+    when "info"
+      "bg-blue-100 border-blue-400 text-blue-700"
+    else
+      "bg-gray-100 border-gray-400 text-gray-700"
+    end
+  end
 end

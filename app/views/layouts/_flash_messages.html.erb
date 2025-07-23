@@ -1,0 +1,6 @@
+<% flash.each do |type, message| %>
+  <% next if message.blank? %>
+  <div class="<%= flash_message_class(type) %> border px-4 py-3 rounded relative" role="alert">
+    <span class="block sm:inline"><%= message %></span>
+  </div>
+<% end %> 

@@ -1,0 +1,11 @@
+<% if logged_in? %>
+  <span class="text-sm text-gray-700">
+    Welcome, <%= current_user_display_name %>!
+  </span>
+  <%= link_to "📊 Dashboard", dashboard_path_for_user, 
+      class: "text-blue-600 hover:text-blue-800 text-sm font-medium" %>
+  <%= button_to "🚪 Logout", logout_path, method: :delete, 
+      class: "text-red-600 hover:text-red-800 text-sm font-medium bg-transparent border-none cursor-pointer" %>
+<% else %>
+  <%= link_to "🔐 Login", login_path, class: "text-blue-600 hover:text-blue-800 text-sm font-medium" %>
+<% end %> 

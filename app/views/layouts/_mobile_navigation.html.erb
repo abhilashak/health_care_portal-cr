@@ -1,0 +1,41 @@
+<div class="sm:hidden">
+  <div class="pt-2 pb-3 space-y-1">
+    <%= link_to "🏥 Hospitals", hospitals_path, 
+        class: "text-gray-900 block pl-3 pr-4 py-2 border-l-4 border-transparent text-base font-medium hover:bg-gray-50 hover:border-gray-300" %>
+    <%= link_to "🏥 Clinics", clinics_path, 
+        class: "text-gray-900 block pl-3 pr-4 py-2 border-l-4 border-transparent text-base font-medium hover:bg-gray-50 hover:border-gray-300" %>
+    <%= link_to "👨‍⚕️ Doctors", doctors_path, 
+        class: "text-gray-900 block pl-3 pr-4 py-2 border-l-4 border-transparent text-base font-medium hover:bg-gray-50 hover:border-gray-300" %>
+    <%= link_to "👥 Patients", patients_path, 
+        class: "text-gray-900 block pl-3 pr-4 py-2 border-l-4 border-transparent text-base font-medium hover:bg-gray-50 hover:border-gray-300" %>
+    <%= link_to "📅 Appointments", appointments_path, 
+        class: "text-gray-900 block pl-3 pr-4 py-2 border-l-4 border-transparent text-base font-medium hover:bg-gray-50 hover:border-gray-300" %>
+  </div>
+  
+  <!-- Mobile auth section -->
+  <div class="pt-4 pb-3 border-t border-gray-200">
+    <% if logged_in? %>
+      <div class="flex items-center px-4">
+        <div class="flex-shrink-0">
+          <div class="h-10 w-10 rounded-full bg-blue-500 flex items-center justify-center">
+            <span class="text-white font-medium"><%= current_user_display_name.first.upcase %></span>
+          </div>
+        </div>
+        <div class="ml-3">
+          <div class="text-base font-medium text-gray-800"><%= current_user_display_name %></div>
+        </div>
+      </div>
+      <div class="mt-3 space-y-1">
+        <%= link_to "📊 Dashboard", dashboard_path_for_user, 
+            class: "text-gray-600 hover:bg-gray-50 hover:text-gray-800 block px-4 py-2 text-base font-medium" %>
+        <%= button_to "🚪 Logout", logout_path, method: :delete, 
+            class: "text-red-600 hover:bg-red-50 hover:text-red-800 block w-full text-left px-4 py-2 text-base font-medium bg-transparent border-none" %>
+      </div>
+    <% else %>
+      <div class="mt-3 space-y-1">
+        <%= link_to "🔐 Login", login_path, 
+            class: "text-blue-600 hover:bg-blue-50 hover:text-blue-800 block px-4 py-2 text-base font-medium" %>
+      </div>
+    <% end %>
+  </div>
+</div> 

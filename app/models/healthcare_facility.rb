@@ -60,6 +60,11 @@ class HealthcareFacility < ApplicationRecord
     type == "Clinic"
   end
 
+  # Display name for user interface
+  def display_name
+    name
+  end
+
   private
 
   def password_required?

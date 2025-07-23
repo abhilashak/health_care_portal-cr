@@ -3,7 +3,7 @@ class ClinicsController < ApplicationController
 
   # GET /clinics
   def index
-    @pagy, @clinics = pagy(Clinic.all)
+    @pagy, @clinics = pagy(HealthcareFacility.clinics)
     respond_to do |format|
       format.html
       format.json { render json: @clinics }
@@ -20,7 +20,7 @@ class ClinicsController < ApplicationController
 
   # GET /clinics/new
   def new
-    @clinic = Clinic.new
+    @clinic = HealthcareFacility.new(type: "Clinic")
   end
 
   # GET /clinics/1/edit
@@ -29,7 +29,7 @@ class ClinicsController < ApplicationController
 
   # POST /clinics
   def create
-    @clinic = Clinic.new(clinic_params)
+    @clinic = HealthcareFacility.new(clinic_params.merge(type: "Clinic"))
 
     respond_to do |format|
       if @clinic.save
@@ -67,7 +67,7 @@ class ClinicsController < ApplicationController
   private
 
   def set_clinic
-    @clinic = Clinic.find(params[:id])
+    @clinic = HealthcareFacility.clinics.find(params[:id])
   rescue ActiveRecord::RecordNotFound
     respond_to do |format|
       format.html { redirect_to clinics_url, alert: "Clinic not found." }
@@ -76,6 +76,6 @@ class ClinicsController < ApplicationController
   end
 
   def clinic_params
-    params.require(:clinic).permit(:name, :address, :phone, :email, :registration_number, :active, :status)
+    params.require(:clinic).permit(:name, :address, :phone, :email, :registration_number, :active, :status, :password)
   end
 end

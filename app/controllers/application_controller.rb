@@ -10,8 +10,8 @@ class ApplicationController < ActionController::Base
 
   # Basic index action for healthcare portal root route
   def index
-    @hospitals_count = Hospital.count
-    @clinics_count = Clinic.count
+    @hospitals_count = HealthcareFacility.where(type: "Hospital").count
+    @clinics_count = HealthcareFacility.where(type: "Clinic").count
     @doctors_count = Doctor.count
     @patients_count = Patient.count
     @appointments_count = Appointment.count
@@ -23,15 +23,15 @@ class ApplicationController < ActionController::Base
 
     # Filter hospitals and clinics based on search with pagination
     @hospitals_pagy, @hospitals = if @hospital_search.present?
-      pagy(Hospital.search_by_name_and_address(@hospital_search))
+      pagy(HealthcareFacility.where(type: "Hospital").search_by_name_and_address(@hospital_search))
     else
-      pagy(Hospital.all)
+      pagy(HealthcareFacility.where(type: "Hospital"))
     end
 
     @clinics_pagy, @clinics = if @clinic_search.present?
-      pagy(Clinic.search_by_name_and_address(@clinic_search))
+      pagy(HealthcareFacility.where(type: "Clinic").search_by_name_and_address(@clinic_search))
     else
-      pagy(Clinic.all)
+      pagy(HealthcareFacility.where(type: "Clinic"))
     end
   end
 

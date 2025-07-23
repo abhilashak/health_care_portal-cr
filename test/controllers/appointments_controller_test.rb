@@ -79,7 +79,7 @@ class AppointmentsControllerTest < ActionDispatch::IntegrationTest
     @completed_appointment = Appointment.create!(
       doctor: @family_doctor,
       patient: @patient,
-      appointment_date: 30.minutes.ago, # Just 30 minutes ago, whatever the current time is
+      appointment_date: 1.day.ago.change(hour: 14, min: 0), # 2 PM yesterday
       status: "completed",
       duration_minutes: 30,
       appointment_type: "routine"
@@ -149,8 +149,10 @@ class AppointmentsControllerTest < ActionDispatch::IntegrationTest
     today_appointment = Appointment.create!(
       doctor: @doctor,
       patient: @patient,
-      appointment_date: Time.current.change(hour: 15, min: 30),
-      status: "scheduled"
+      appointment_date: Date.current.change(hour: 15, min: 30),
+      status: "scheduled",
+      duration_minutes: 30,
+      appointment_type: "routine"
     )
 
     get appointments_url, params: { date: Date.current }

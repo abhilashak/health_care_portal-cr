@@ -2,6 +2,9 @@ class HealthcareFacility < ApplicationRecord
   # Rails 8 Authentication
   has_secure_password
 
+  # Include pg_search for full-text search
+  include PgSearch::Model
+
   # Single Table Inheritance (STI) - base class for Hospital and Clinic
 
   # Associations
@@ -9,6 +12,21 @@ class HealthcareFacility < ApplicationRecord
            class_name: "Doctor", foreign_key: "hospital_id", dependent: :nullify
   has_many :clinic_doctors, -> { where.not(clinic_id: nil) },
            class_name: "Doctor", foreign_key: "clinic_id", dependent: :nullify
+
+  # pg_search configuration for full-text search
+  pg_search_scope :search_by_name_and_address,
+                  against: {
+                    name: "A",
+                    address: "B",
+                    description: "C"
+                  },
+                  using: {
+                    tsearch: {
+                      prefix: true,
+                      dictionary: "english",
+                      tsvector_column: "searchable"
+                    }
+                  }
 
   # Validations - Common to all healthcare facilities
   validates :type, presence: true, inclusion: { in: %w[Hospital Clinic] }

@@ -23,13 +23,13 @@ class ApplicationController < ActionController::Base
 
     # Filter hospitals and clinics based on search with pagination
     @hospitals_pagy, @hospitals = if @hospital_search.present?
-      pagy(Hospital.where("name ILIKE ? OR address ILIKE ?", "%#{@hospital_search}%", "%#{@hospital_search}%"))
+      pagy(Hospital.search_by_name_and_address(@hospital_search))
     else
       pagy(Hospital.all)
     end
 
     @clinics_pagy, @clinics = if @clinic_search.present?
-      pagy(Clinic.where("name ILIKE ? OR address ILIKE ?", "%#{@clinic_search}%", "%#{@clinic_search}%"))
+      pagy(Clinic.search_by_name_and_address(@clinic_search))
     else
       pagy(Clinic.all)
     end

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_07_21_183340) do
+ActiveRecord::Schema[8.0].define(version: 2025_07_23_105928) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -83,6 +83,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_07_21_183340) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "password_digest"
+    t.tsvector "searchable"
     t.index ["accepts_insurance"], name: "index_healthcare_facilities_that_accept_insurance", where: "(accepts_insurance = true)"
     t.index ["accepts_new_patients"], name: "index_healthcare_facilities_accepting_new_patients", where: "(accepts_new_patients = true)"
     t.index ["active"], name: "index_healthcare_facilities_on_active_status", where: "(active = true)"
@@ -93,6 +94,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_07_21_183340) do
     t.index ["operating_hours"], name: "index_healthcare_facilities_on_operating_hours", using: :gin
     t.index ["phone"], name: "index_healthcare_facilities_on_phone", unique: true
     t.index ["registration_number"], name: "index_healthcare_facilities_on_registration_number", unique: true
+    t.index ["searchable"], name: "index_healthcare_facilities_on_searchable", using: :gin
     t.index ["services"], name: "index_healthcare_facilities_on_services", using: :gin
     t.index ["specialties"], name: "index_healthcare_facilities_on_specialties", using: :gin
     t.index ["type"], name: "index_healthcare_facilities_on_type"

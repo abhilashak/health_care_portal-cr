@@ -2,9 +2,27 @@ class Patient < ApplicationRecord
   # Rails 8 Authentication
   has_secure_password
 
+  # Include pg_search for full-text search
+  include PgSearch::Model
+
   # Associations
   has_many :appointments, dependent: :destroy
   has_many :doctors, through: :appointments
+
+  # pg_search configuration for full-text search
+  pg_search_scope :search_by_name_and_email,
+                  against: {
+                    first_name: "A",
+                    last_name: "A",
+                    email: "B",
+                    phone: "C"
+                  },
+                  using: {
+                    tsearch: {
+                      prefix: true,
+                      dictionary: "english"
+                    }
+                  }
 
   # Validations
   validates :first_name, presence: true, length: { maximum: 100 }

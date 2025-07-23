@@ -2,11 +2,29 @@ class Doctor < ApplicationRecord
   # Rails 8 Authentication
   has_secure_password
 
+  # Include pg_search for full-text search
+  include PgSearch::Model
+
   # Associations
   belongs_to :hospital, class_name: "HealthcareFacility", optional: true
   belongs_to :clinic, class_name: "HealthcareFacility", optional: true
   has_many :appointments, dependent: :destroy
   has_many :patients, through: :appointments
+
+  # pg_search configuration for full-text search
+  pg_search_scope :search_by_name_and_specialization,
+                  against: {
+                    first_name: "A",
+                    last_name: "A",
+                    specialization: "B",
+                    license_number: "C"
+                  },
+                  using: {
+                    tsearch: {
+                      prefix: true,
+                      dictionary: "english"
+                    }
+                  }
 
   # Validations
   validates :first_name, presence: true, length: { maximum: 100 }
